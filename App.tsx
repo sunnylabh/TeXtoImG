@@ -4,7 +4,7 @@ import { PreviewArea } from './components/PreviewArea';
 import { Controls } from './components/Controls';
 import { GeminiInput } from './components/GeminiInput';
 import { ExportSettings, DEFAULT_LATEX } from './types';
-import { Sigma, AlertTriangle } from 'lucide-react';
+import { Sigma } from 'lucide-react';
 
 export default function App() {
   const [latex, setLatex] = useState<string>(DEFAULT_LATEX);
@@ -15,8 +15,6 @@ export default function App() {
     theme: 'light',
     padding: 40,
   });
-
-  const apiKeyMissing = !import.meta.env.VITE_API_KEY;
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-zinc-100 selection:bg-white/20">
@@ -39,15 +37,6 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-1 p-6 max-w-screen-2xl mx-auto w-full flex flex-col">
         
-        {apiKeyMissing && (
-          <div className="bg-orange-900/20 border border-orange-900/50 text-orange-200 px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
-            <AlertTriangle size={20} />
-            <span className="text-sm">
-              <strong>AI generation is off:</strong> no Gemini API key is configured. The LaTeX editor and image export work normally. To enable AI, set <code>VITE_API_KEY</code> in <code>.env.local</code>.
-            </span>
-          </div>
-        )}
-
         {/* AI Input Section */}
         <GeminiInput onGenerate={setLatex} />
 

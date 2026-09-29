@@ -2,14 +2,14 @@
 
 Render LaTeX equations in the browser and export them as high-resolution PNG or JPEG images, for slides, posters and documents. Optionally, describe an equation in plain English and let Gemini write the LaTeX.
 
-**Live demo:** https://textoimg-alpha.vercel.app (AI generation is disabled in the demo)
+**Live demo:** https://textoimg-alpha.vercel.app
 
 ## Features
 
 - Live KaTeX preview as you type
 - Export to PNG or JPEG at 1x–5x scale
 - Light or dark theme, adjustable padding, transparent background (PNG)
-- Optional natural-language to LaTeX generation (Gemini API)
+- Natural-language to LaTeX generation (Gemini API, free tier)
 
 ## Getting started
 
@@ -29,16 +29,15 @@ npm run build      # output in dist/
 npm run preview    # serve the build locally
 ```
 
-## AI generation (optional)
+## AI generation
 
-The editor and export work without any configuration. To enable the "describe an equation" feature, create `.env.local`:
+The "describe a formula" feature is served by a Vercel serverless function (`api/generate.ts`) that calls the Gemini API, so the API key never reaches the browser. The editor and export work without it.
 
-```
-VITE_API_KEY=your-gemini-api-key
-# VITE_GEMINI_MODEL=gemini-2.5-flash   (optional override)
-```
+1. Get a free API key from [Google AI Studio](https://aistudio.google.com/apikey).
+2. Add it to the Vercel project: `vercel env add GEMINI_API_KEY production`
+3. Optionally set `GEMINI_MODEL` (default `gemini-2.5-flash`).
 
-Get a key from [Google AI Studio](https://aistudio.google.com/apikey). Note that `VITE_` variables are embedded in the client bundle, so do not deploy a build containing your key to a public site.
+To use AI generation locally, put `GEMINI_API_KEY=...` in `.env.local` and run `vercel dev` instead of `npm run dev`.
 
 ## Project structure
 
@@ -48,7 +47,8 @@ components/LatexEditor    source editor
 components/PreviewArea    KaTeX rendering and image export
 components/Controls       export settings
 components/GeminiInput    natural-language prompt
-services/geminiService.ts Gemini API call
+services/geminiService.ts client for /api/generate
+api/generate.ts           serverless Gemini proxy
 ```
 
 ## Tech stack

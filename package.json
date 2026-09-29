@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "html-to-image": "^1.11.13",
     "katex": "^0.16.9",
     "lucide-react": "^0.300.0",
