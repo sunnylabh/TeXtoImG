@@ -2,6 +2,8 @@
 
 Render LaTeX equations in the browser and export them as high-resolution PNG or JPEG images, for slides, posters and documents. Optionally, describe an equation in plain English and let Gemini write the LaTeX.
 
+**Live demo:** https://textoimg-alpha.vercel.app (AI generation is disabled in the demo)
+
 ## Features
 
 - Live KaTeX preview as you type
