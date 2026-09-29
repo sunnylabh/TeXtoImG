@@ -43,7 +43,7 @@ export default function App() {
           <div className="bg-orange-900/20 border border-orange-900/50 text-orange-200 px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
             <AlertTriangle size={20} />
             <span className="text-sm">
-              <strong>API Key Missing:</strong> AI generation features will not work. Please add your <code>API_KEY</code> to the environment variables.
+              <strong>AI generation is off:</strong> no Gemini API key is configured. The LaTeX editor and image export work normally. To enable AI, set <code>VITE_API_KEY</code> in <code>.env.local</code>.
             </span>
           </div>
         )}

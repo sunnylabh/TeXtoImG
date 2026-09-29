@@ -1,20 +1,54 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# TexToImg
 
-# Run and deploy your AI Studio app
+Render LaTeX equations in the browser and export them as high-resolution PNG or JPEG images, for slides, posters and documents. Optionally, describe an equation in plain English and let Gemini write the LaTeX.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1yTiUsLo1nn60vjgU1ho0w-3_8EUIXUZK
+- Live KaTeX preview as you type
+- Export to PNG or JPEG at 1x–5x scale
+- Light or dark theme, adjustable padding, transparent background (PNG)
+- Optional natural-language to LaTeX generation (Gemini API)
 
-## Run Locally
+## Getting started
 
-**Prerequisites:**  Node.js
+Requires Node.js 18 or later.
 
+```bash
+git clone https://github.com/sunnylabh/TeXtoImG.git
+cd TeXtoImG
+npm install
+npm run dev        # http://localhost:5173
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Production build:
+
+```bash
+npm run build      # output in dist/
+npm run preview    # serve the build locally
+```
+
+## AI generation (optional)
+
+The editor and export work without any configuration. To enable the "describe an equation" feature, create `.env.local`:
+
+```
+VITE_API_KEY=your-gemini-api-key
+# VITE_GEMINI_MODEL=gemini-2.5-flash   (optional override)
+```
+
+Get a key from [Google AI Studio](https://aistudio.google.com/apikey). Note that `VITE_` variables are embedded in the client bundle, so do not deploy a build containing your key to a public site.
+
+## Project structure
+
+```
+App.tsx                   layout and state
+components/LatexEditor    source editor
+components/PreviewArea    KaTeX rendering and image export
+components/Controls       export settings
+components/GeminiInput    natural-language prompt
+services/geminiService.ts Gemini API call
+```
+
+## Tech stack
+
+React 18, TypeScript, Vite, KaTeX, html-to-image, Tailwind CSS.

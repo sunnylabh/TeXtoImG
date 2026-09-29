@@ -4,14 +4,14 @@ export const generateLatexFromPrompt = async (prompt: string): Promise<string> =
   const apiKey = import.meta.env.VITE_API_KEY;
   
   if (!apiKey) {
-    throw new Error("API Key is missing. Please set the VITE_API_KEY environment variable.");
+    throw new Error("AI generation is disabled: no Gemini API key configured (VITE_API_KEY).");
   }
 
   try {
     // Initialize on demand to avoid crashes at module load time
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ 
-      model: "models/gemini-2.0-flash"
+    const model = genAI.getGenerativeModel({
+      model: import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash"
     });
     
     const systemPrompt = `You are a helpful LaTeX expert assistant. 

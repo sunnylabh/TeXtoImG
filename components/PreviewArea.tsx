@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import katex from 'katex';
-import html2canvas from 'html2canvas';
+import { toJpeg, toPng } from 'html-to-image';
 import { ExportSettings } from '../types';
 import { Download, ZoomIn, ZoomOut, AlertCircle } from 'lucide-react';
 
@@ -41,7 +41,7 @@ export const PreviewArea: React.FC<PreviewAreaProps> = ({ latex, settings }) => 
         displayMode: true,
         output: 'html',
         strict: false,
-        trust: true, 
+        trust: false,
       });
       setHtmlContent(html);
       setError(null);
@@ -57,55 +57,25 @@ export const PreviewArea: React.FC<PreviewAreaProps> = ({ latex, settings }) => 
     if (!renderRef.current) return;
 
     try {
-      // Wait for fonts and styles to fully load
+      // KaTeX fonts must be loaded before they can be embedded in the image
       await document.fonts.ready;
-      
-      // Longer delay to ensure KaTeX rendering is complete
-      await new Promise(resolve => setTimeout(resolve, 500));
 
-      const canvas = await html2canvas(renderRef.current, {
-        backgroundColor: settings.transparent ? null : (settings.theme === 'dark' ? '#000000' : '#ffffff'),
-        scale: settings.scale,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-        foreignObjectRendering: false,
-        imageTimeout: 0,
-        windowWidth: renderRef.current.scrollWidth,
-        windowHeight: renderRef.current.scrollHeight,
-        y: 0,
-        scrollY: 0,
-        scrollX: 0,
-        onclone: (clonedDoc) => {
-          // Force layout recalculation and add CSS fixes for better rendering
-          const clonedElement = clonedDoc.querySelector('[data-render-target]') as HTMLElement;
-          if (clonedElement) {
-            // Add CSS to improve vertical alignment of fraction bars
-            const style = clonedDoc.createElement('style');
-            style.textContent = `
-              .katex-render-container * {
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-              }
-              .katex .frac-line {
-                transform: translateY(0px) !important;
-                position: relative !important;
-              }
-              .katex .vlist-t {
-                vertical-align: baseline !important;
-              }
-            `;
-            clonedDoc.head.appendChild(style);
-            
-            // Trigger reflow to ensure all styles are applied
-            void clonedElement.offsetHeight;
-          }
-        }
-      });
+      // html-to-image renders through an SVG foreignObject, so the browser's own
+      // layout engine draws the KaTeX output (html2canvas misplaces fraction bars
+      // and subscripts).
+      const options = {
+        pixelRatio: settings.scale,
+        backgroundColor: settings.transparent && settings.format === 'png'
+          ? undefined
+          : (settings.theme === 'dark' ? '#000000' : '#ffffff'),
+      };
+      const dataUrl = settings.format === 'png'
+        ? await toPng(renderRef.current, options)
+        : await toJpeg(renderRef.current, { ...options, quality: 1.0 });
 
       const link = document.createElement('a');
       link.download = `latex_export_${Date.now()}.${settings.format}`;
-      link.href = canvas.toDataURL(`image/${settings.format}`, 1.0);
+      link.href = dataUrl;
       link.click();
     } catch (e) {
       console.error("Export failed", e);
