@@ -4,7 +4,7 @@ import { PreviewArea } from './components/PreviewArea';
 import { Controls } from './components/Controls';
 import { GeminiInput } from './components/GeminiInput';
 import { ExportSettings, DEFAULT_LATEX } from './types';
-import { Sigma } from 'lucide-react';
+import { Github, Sigma } from 'lucide-react';
 
 export default function App() {
   const [latex, setLatex] = useState<string>(DEFAULT_LATEX);
@@ -27,9 +27,22 @@ export default function App() {
                 <Sigma size={20} strokeWidth={3} />
             </div>
             <h1 className="text-lg font-bold tracking-tight">TexToImg</h1>
+            <span className="text-xs text-zinc-500 self-end mb-1">by Sunny</span>
           </div>
-          <div className="text-xs text-zinc-500 font-mono">
-            React + Tailwind + Gemini 2.5
+          <div className="flex items-center gap-4">
+            <span className="hidden sm:inline text-xs text-zinc-500 font-mono">
+              React + Tailwind + Gemini 2.5
+            </span>
+            <a
+              href="https://github.com/sunnylabh/TeXtoImG"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Source code on GitHub"
+              title="Source code on GitHub"
+              className="text-zinc-400 hover:text-white transition-colors"
+            >
+              <Github size={20} />
+            </a>
           </div>
         </div>
       </header>
