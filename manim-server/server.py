@@ -61,6 +61,8 @@ app = FastAPI(title="TexToImg Manim server")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=os.environ.get("ALLOWED_ORIGINS", "*").split(","),
+    # e.g. ^https://([a-z0-9-]+\.)?teximg\.pages\.dev$ to also allow deploy previews
+    allow_origin_regex=os.environ.get("ALLOWED_ORIGIN_REGEX") or None,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )

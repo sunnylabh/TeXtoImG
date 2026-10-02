@@ -21,3 +21,6 @@ services:
         value: "300"
       - key: ALLOWED_ORIGINS
         value: https://teximg.pages.dev,http://localhost:5173
+      # Deploy previews such as https://abc123.teximg.pages.dev
+      - key: ALLOWED_ORIGIN_REGEX
+        value: ^https://([a-z0-9-]+\.)?teximg\.pages\.dev$
