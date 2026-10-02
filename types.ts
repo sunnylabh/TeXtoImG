@@ -6,12 +6,6 @@ export interface ExportSettings {
   padding: number;
 }
 
-export interface AnimationSettings {
-  style: 'write' | 'lines' | 'fade' | 'highlight';
-  format: 'gif' | 'mp4';
-  quality: 'low' | 'medium' | 'high';
-}
-
 export interface GenerationState {
   isLoading: boolean;
   error: string | null;

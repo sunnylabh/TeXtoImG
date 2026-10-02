@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { LatexEditor } from './components/LatexEditor';
 import { PreviewArea } from './components/PreviewArea';
-import { AnimationArea } from './components/AnimationArea';
 import { Controls } from './components/Controls';
 import { GeminiInput } from './components/GeminiInput';
 import { ExportSettings, DEFAULT_LATEX } from './types';
@@ -16,13 +15,6 @@ export default function App() {
     theme: 'light',
     padding: 40,
   });
-  // Bumped when the AI writes new LaTeX, so the animation follows the prompt too
-  const [animateToken, setAnimateToken] = useState(0);
-
-  const handleGenerated = (generated: string) => {
-    setLatex(generated);
-    setAnimateToken(t => t + 1);
-  };
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-zinc-100 selection:bg-white/20">
@@ -39,7 +31,7 @@ export default function App() {
           </div>
           <div className="flex items-center gap-4">
             <span className="hidden sm:inline text-xs text-zinc-500 font-mono">
-              React + Tailwind + Gemini 2.5 + Manim
+              React + Tailwind + Gemini 2.5
             </span>
             <a
               href="https://github.com/sunnylabh/TeXtoImG"
@@ -59,7 +51,7 @@ export default function App() {
       <main className="flex-1 p-6 max-w-screen-2xl mx-auto w-full flex flex-col">
         
         {/* AI Input Section */}
-        <GeminiInput onGenerate={handleGenerated} />
+        <GeminiInput onGenerate={setLatex} />
 
         {/* Workspace Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-[600px]">
@@ -72,14 +64,9 @@ export default function App() {
             <Controls settings={settings} onChange={setSettings} />
           </div>
 
-          {/* Right Column: Image and Animation */}
-          <div className="lg:col-span-8 xl:col-span-9 grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <div className="min-h-[400px]">
-              <PreviewArea latex={latex} settings={settings} />
-            </div>
-            <div className="min-h-[400px]">
-              <AnimationArea latex={latex} theme={settings.theme} renderToken={animateToken} />
-            </div>
+          {/* Right Column: Preview */}
+          <div className="lg:col-span-8 xl:col-span-9 h-full min-h-[400px]">
+            <PreviewArea latex={latex} settings={settings} />
           </div>
 
         </div>
@@ -87,7 +74,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-zinc-900 py-6 text-center text-zinc-600 text-sm">
-        <p>&copy; {new Date().getFullYear()} TexToImg. Powered by Google Gemini and Manim.</p>
+        <p>&copy; {new Date().getFullYear()} TexToImg. Powered by Google Gemini.</p>
       </footer>
 
     </div>

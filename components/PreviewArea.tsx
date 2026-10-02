@@ -88,7 +88,7 @@ export const PreviewArea: React.FC<PreviewAreaProps> = ({ latex, settings }) => 
   return (
     <div className="flex flex-col h-full bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden relative group">
        <div className="bg-zinc-850 px-4 py-2 border-b border-zinc-800 flex items-center justify-between">
-        <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Image</span>
+        <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Preview</span>
         <div className="flex gap-2">
             <button onClick={() => setZoom(z => Math.max(0.5, z - 0.1))} className="p-1 hover:bg-zinc-700 rounded text-zinc-400">
                 <ZoomOut size={14} />
