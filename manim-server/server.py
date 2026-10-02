@@ -32,6 +32,8 @@ RENDER_TIMEOUT = int(os.environ.get("MANIM_RENDER_TIMEOUT", "120"))
 # Rendering is CPU-heavy; queue requests beyond this many at once
 render_slots = asyncio.Semaphore(int(os.environ.get("MANIM_CONCURRENCY", "2")))
 
+# Bump when the scene's look changes so cached renders are not reused
+RENDER_VERSION = "3"
 QUALITY_FLAGS = {"low": "l", "medium": "m", "high": "h"}
 MEDIA_TYPES = {"gif": "image/gif", "mp4": "video/mp4"}
 
@@ -71,7 +73,7 @@ async def animate(req: AnimateRequest):
     if FORBIDDEN_TEX.search(req.latex):
         raise HTTPException(400, "This LaTeX uses a command that is not allowed for animations.")
 
-    key = hashlib.sha256(req.model_dump_json().encode()).hexdigest()[:32]
+    key = hashlib.sha256((RENDER_VERSION + req.model_dump_json()).encode()).hexdigest()[:32]
     cached = CACHE_DIR / f"{key}.{req.format}"
     if not cached.exists():
         async with render_slots:

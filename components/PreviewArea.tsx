@@ -118,9 +118,11 @@ export const PreviewArea: React.FC<PreviewAreaProps> = ({ latex, settings }) => 
             <div
                 ref={renderRef}
                 data-render-target
-                className={`inline-block katex-render-container`}
+                className={`inline-block katex-render-container relative`}
                 style={{
                     padding: `${settings.padding}px`,
+                    // Keep room for the watermark even with little padding
+                    paddingBottom: `${Math.max(settings.padding, 18)}px`,
                     backgroundColor: settings.transparent ? 'transparent' : (isDarkTheme ? 'black' : 'white'),
                     color: isDarkTheme ? 'white' : 'black',
                     minWidth: '100px',
@@ -128,8 +130,15 @@ export const PreviewArea: React.FC<PreviewAreaProps> = ({ latex, settings }) => 
                     verticalAlign: 'baseline',
                     lineHeight: '1',
                 }}
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
-            />
+            >
+                <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+                <span
+                    className="absolute bottom-1 right-2 font-sans select-none pointer-events-none"
+                    style={{ fontSize: '9px', lineHeight: 1, letterSpacing: '0.02em', opacity: 0.45 }}
+                >
+                    TextoImg
+                </span>
+            </div>
           </div>
         )}
       </div>

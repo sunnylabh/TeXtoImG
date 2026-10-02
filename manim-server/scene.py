@@ -13,15 +13,19 @@ from manim import (
     FadeIn,
     LaggedStart,
     MathTex,
+    DR,
     Scene,
+    Text,
     Write,
     config,
 )
 
 THEMES = {
-    "light": {"background": "#ffffff", "text": "#000000", "accent": "#6366f1"},
-    "dark": {"background": "#000000", "text": "#ffffff", "accent": "#a5b4fc"},
+    "light": {"background": "#ffffff", "text": "#000000", "accent": "#6366f1", "mark": "#8a8a8a"},
+    "dark": {"background": "#000000", "text": "#ffffff", "accent": "#a5b4fc", "mark": "#8a8a8a"},
 }
+
+WATERMARK = "TextoImg"
 
 # Multi-line environments that can be split into rows, mapped to the
 # top-level environment Manim should compile the rows in.
@@ -101,6 +105,11 @@ class EquationScene(Scene):
         theme = THEMES.get(job.get("theme"), THEMES["light"])
         style = job.get("style", "write")
         self.camera.background_color = theme["background"]
+
+        # Small watermark, present from the first frame to the last
+        mark = Text(WATERMARK, font_size=14, color=theme["mark"]).set_opacity(0.7)
+        mark.to_corner(DR, buff=0.2)
+        self.add(mark)
 
         eq, has_rows = build_equation(strip_delimiters(job["latex"]), theme["text"])
 
