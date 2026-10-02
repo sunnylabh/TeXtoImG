@@ -53,13 +53,15 @@ python3 -m venv .venv
 
 With the server running, `npm run dev` proxies `/api/animate` to it, so the Animation panel works locally. When you describe a formula with the AI prompt, the animation is rendered automatically as well.
 
-To use animations on a deployed site, run the server somewhere that supports containers (Render, Fly.io, Railway, Hugging Face Spaces, ...) using `manim-server/Dockerfile`, then build the frontend with its URL:
+To use animations on a deployed site, run the server somewhere that supports containers using `manim-server/Dockerfile`. The live demo uses Render's free tier via the `render.yaml` Blueprint (one click: [Deploy to Render](https://render.com/deploy?repo=https://github.com/sunnylabh/TeXtoImG)). The free tier is small, so it is capped at 480p and sleeps when idle; the first animation after a while takes a minute or two.
+
+Then build the frontend with the server's URL (and the same quality cap, so the UI hides higher resolutions):
 
 ```bash
-VITE_MANIM_API_URL=https://your-manim-server.example.com npm run build
+VITE_MANIM_API_URL=https://textoimg-manim.onrender.com VITE_MANIM_MAX_QUALITY=low npm run build
 ```
 
-Server options (environment variables): `ALLOWED_ORIGINS` (CORS, default `*`), `MANIM_CONCURRENCY` (parallel renders, default 2), `MANIM_RENDER_TIMEOUT` (seconds, default 120), `PORT` (default 8000). Rendered files are cached by content, and LaTeX commands that read or write files are rejected.
+Server options (environment variables): `ALLOWED_ORIGINS` (CORS, default `*`), `MANIM_CONCURRENCY` (parallel renders, default 2), `MANIM_RENDER_TIMEOUT` (seconds, default 120), `MANIM_MAX_QUALITY` (`low`, `medium` or `high`, default `high`), `PORT` (default 8000). Rendered files are cached by content, and LaTeX commands that read or write files are rejected.
 
 ## Deployment
 

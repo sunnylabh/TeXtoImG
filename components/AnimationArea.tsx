@@ -16,11 +16,15 @@ const STYLES: { value: AnimationSettings['style']; label: string }[] = [
   { value: 'fade', label: 'Fade in' },
   { value: 'highlight', label: 'Highlight' },
 ];
-const QUALITIES: { value: AnimationSettings['quality']; label: string }[] = [
+const ALL_QUALITIES: { value: AnimationSettings['quality']; label: string }[] = [
   { value: 'low', label: '480p' },
   { value: 'medium', label: '720p' },
   { value: 'high', label: '1080p' },
 ];
+// Builds for a small render host set VITE_MANIM_MAX_QUALITY to hide what it can't do
+const maxQualityIndex = ALL_QUALITIES.findIndex(q => q.value === import.meta.env.VITE_MANIM_MAX_QUALITY);
+const QUALITIES = maxQualityIndex >= 0 ? ALL_QUALITIES.slice(0, maxQualityIndex + 1) : ALL_QUALITIES;
+const DEFAULT_QUALITY = QUALITIES[Math.min(1, QUALITIES.length - 1)].value;
 
 interface Result {
   url: string;
@@ -58,11 +62,12 @@ export const AnimationArea: React.FC<AnimationAreaProps> = ({ latex, theme, rend
   const [settings, setSettings] = useState<AnimationSettings>({
     style: 'write',
     format: 'gif',
-    quality: 'medium',
+    quality: DEFAULT_QUALITY,
   });
   const [result, setResult] = useState<Result | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [slow, setSlow] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const currentKey = JSON.stringify({ latex, theme, settings });
@@ -92,6 +97,14 @@ export const AnimationArea: React.FC<AnimationAreaProps> = ({ latex, theme, rend
     if (renderToken > 0) handleRender();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [renderToken]);
+
+  // A sleeping free-tier server can take a while to answer the first request
+  useEffect(() => {
+    setSlow(false);
+    if (!loading) return;
+    const timer = setTimeout(() => setSlow(true), 8000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   // Cancel in-flight requests on unmount; release each object URL once replaced
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -123,7 +136,9 @@ export const AnimationArea: React.FC<AnimationAreaProps> = ({ latex, theme, rend
           value={settings.format}
           onChange={v => update('format', v)}
         />
-        <Segmented options={QUALITIES} value={settings.quality} onChange={v => update('quality', v)} />
+        {QUALITIES.length > 1 && (
+          <Segmented options={QUALITIES} value={settings.quality} onChange={v => update('quality', v)} />
+        )}
       </div>
 
       <div className="flex-1 overflow-auto flex items-center justify-center p-8 pb-24 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-zinc-950/50 relative">
@@ -153,6 +168,11 @@ export const AnimationArea: React.FC<AnimationAreaProps> = ({ latex, theme, rend
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-zinc-300">
             <Loader2 size={28} className="animate-spin" />
             <span className="text-xs text-zinc-400">Rendering with Manim…</span>
+            {slow && (
+              <span className="text-[11px] text-zinc-500 max-w-[16rem] text-center">
+                The render server may be waking up. The first animation can take a minute or two.
+              </span>
+            )}
           </div>
         )}
 

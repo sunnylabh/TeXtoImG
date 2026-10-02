@@ -35,6 +35,9 @@ render_slots = asyncio.Semaphore(int(os.environ.get("MANIM_CONCURRENCY", "2")))
 # Bump when the scene's look changes so cached renders are not reused
 RENDER_VERSION = "3"
 QUALITY_FLAGS = {"low": "l", "medium": "m", "high": "h"}
+QUALITY_ORDER = list(QUALITY_FLAGS)
+# Small hosts (e.g. Render's free tier) can cap the resolution
+MAX_QUALITY = os.environ.get("MANIM_MAX_QUALITY", "high")
 MEDIA_TYPES = {"gif": "image/gif", "mp4": "video/mp4"}
 
 # Commands that read/write files or change TeX's parsing rules. Equations never
@@ -65,13 +68,16 @@ app.add_middleware(
 
 @app.get("/api/health")
 def health():
-    return {"ok": True}
+    return {"ok": True, "max_quality": MAX_QUALITY}
 
 
 @app.post("/api/animate")
 async def animate(req: AnimateRequest):
     if FORBIDDEN_TEX.search(req.latex):
         raise HTTPException(400, "This LaTeX uses a command that is not allowed for animations.")
+
+    if QUALITY_ORDER.index(req.quality) > QUALITY_ORDER.index(MAX_QUALITY):
+        req = req.model_copy(update={"quality": MAX_QUALITY})
 
     key = hashlib.sha256((RENDER_VERSION + req.model_dump_json()).encode()).hexdigest()[:32]
     cached = CACHE_DIR / f"{key}.{req.format}"
