@@ -27,7 +27,7 @@ export const GeminiInput: React.FC<GeminiInputProps> = ({ onGenerate }) => {
   };
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 p-1 rounded-full flex items-center shadow-lg shadow-black/50 max-w-2xl mx-auto mb-6">
+    <div className="bg-zinc-900 border border-zinc-800 p-1 rounded-full flex items-center shadow-lg shadow-black/50 w-full max-w-2xl mx-auto mb-6">
       <div className="pl-4 pr-2 text-zinc-400">
         <Sparkles size={18} className={loading ? "animate-pulse text-indigo-400" : ""} />
       </div>
